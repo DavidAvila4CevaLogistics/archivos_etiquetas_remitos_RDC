@@ -1,0 +1,31 @@
+{
+    "id": "/control-etiquetas-despacho",
+    "name": "Control Etiquetas/Remitos Despacho RDC Troncal Rosario",
+    "short_name": "Control Archivos de Etiquetas",
+    "description": "PWA para comparar archivo lista de etiquetas y archivo de remitos impresos",
+    "start_url": "/archivos_etiquetas_remitos_RDC/",
+    "scope": "/archivos_etiquetas_remitos_RDC/",
+    "display": "standalone",
+    "orientation": "landscape",
+    "background_color": "#0055B8",
+    "theme_color": "#0055B8",
+    "icons": [{
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icon-512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

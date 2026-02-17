@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Etiquetas/Remitos Despacho RDC Troncal Rosario</title>
+
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Colores de la app -->
+    <meta name="theme-color" content="#0055B8">
+
+    <!-- Librerías -->
+    <script src="./libs/xlsx.full.min.js"></script>
+    <script src="./libs/jspdf.umd.min.js"></script>
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #4A90E2, #0055B8);
+            min-height: 100vh;
+            color: #000000;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #FFFFFF;
+            padding: 30px 20px;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            border-bottom: 3px solid #000000;
+            margin-bottom: 30px;
+        }
+        
+        .menu-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(to bottom, #FF6B6B, #C41E3A);
+            color: #FFFFFF;
+            padding: 15px 25px;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #FF5252, #B01830);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .content-area {
+            background: linear-gradient(to bottom, #FFFFFF, #F0F0F0);
+            border: 3px solid #000000;
+            border-radius: 10px;
+            padding: 25px;
+            min-height: 400px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .file-input-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #FAFAFA;
+            border: 2px solid #000000;
+            border-radius: 6px;
+        }
+        
+        .file-input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .file-input-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #000000;
+            border-radius: 4px;
+            background: #FFFFFF;
+            cursor: pointer;
+        }
+        
+        .status-message {
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+        
+        .status-warning {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-info {
+            background: #D1ECF1;
+            color: #0C5460;
+        }
+        
+        .report-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 6px;
+        }
+        
+        .report-section h2 {
+            color: #0055B8;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .report-section p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .code-list {
+            background: #F5F5F5;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .code-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .code-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #DDD;
+        }
+        
+        .code-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #0055B8;
+            font-weight: bold;
+        }
+        
+        .spinner {
+            border: 4px solid #F3F3F3;
+            border-top: 4px solid #C41E3A;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Control Etiquetas/Remitos Despacho RDC Troncal Rosario</h1>
+
+        <div class="menu-buttons">
+            <button class="btn" onclick="mostrarImportarA()">📥 Importar Etiquetas a Controlar</button>
+            <button class="btn" onclick="mostrarImportarB()">📥 Importar Impresos</button>
+            <button class="btn" id="btnComparar" onclick="compararArchivos()" disabled>🔍 Comparar</button>
+            <button class="btn" id="btnExportar" onclick="exportarPDF()" disabled>📄 Exportar Resultado</button>
+            <button class="btn" onclick="limpiarDatos()">🗑️ Limpiar Datos</button>
+        </div>
+
+        <div class="content-area" id="contentArea">
+            <div id="welcomeMessage">
+                <h2 style="color: #0055B8; text-align: center;">Bienvenido al Sistema de Control</h2>
+                <p style="text-align: center; margin-top: 20px; font-size: 16px;">
+                    Utilice los botones del menú para comenzar:<br><br> 1️⃣ Importar Etiquetas a Controlar (Archivo TU)<br> 2️⃣ Importar Impresos (Archivo de Remitos)<br> 3️⃣ Realizar la Comparación<br> 4️⃣ Exportar el Reporte en PDF
+                </p>
+            </div>
+
+            <div id="importarA" class="hidden">
+                <h2 style="color: #0055B8; border-bottom: 2px solid #000000; padding-bottom: 10px;">Importar Etiquetas a Controlar</h2>
+                <div class="file-input-group">
+                    <label for="fileA">Seleccione el archivo de Etiquetas (TU*.xlsx):</label>
+                    <input type="file" id="fileA" accept=".xlsx,.xls" onchange="procesarArchivoA(event)">
+                </div>
+                <div id="statusA"></div>
+            </div>
+
+            <div id="importarB" class="hidden">
+                <h2 style="color: #0055B8; border-bottom: 2px solid #000000; padding-bottom: 10px;">Importar Impresos</h2>
+                <div class="file-input-group">
+                    <label for="fileB">Seleccione el archivo de Impresos (impresos*.xlsx):</label>
+                    <input type="file" id="fileB" accept=".xlsx,.xls" onchange="procesarArchivoB(event)">
+                </div>
+                <div id="statusB"></div>
+            </div>
+
+            <div id="reporteArea" class="hidden"></div>
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Procesando datos...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let datosA = null;
+        let datosB = null;
+        let nombreArchivoA = '';
+        let nombreArchivoB = '';
+        let reporteGenerado = null;
+
+        function mostrarImportarA() {
+            ocultarTodo();
+            document.getElementById('importarA').classList.remove('hidden');
+        }
+
+        function mostrarImportarB() {
+            ocultarTodo();
+            document.getElementById('importarB').classList.remove('hidden');
+        }
+
+        function ocultarTodo() {
+            document.getElementById('welcomeMessage').classList.add('hidden');
+            document.getElementById('importarA').classList.add('hidden');
+            document.getElementById('importarB').classList.add('hidden');
+            document.getElementById('reporteArea').classList.add('hidden');
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function procesarArchivoA(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            nombreArchivoA = file.name;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {
+                        type: 'array'
+                    });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+                        header: 1
+                    });
+
+                    const handlingUnitIndex = jsonData[0].indexOf('Handling Unit');
+                    if (handlingUnitIndex === -1) {
+                        mostrarEstado('statusA', 'Error: No se encontró la columna "Handling Unit"', 'error');
+                        return;
+                    }
+
+                    const codigos = [];
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const codigo = jsonData[i][handlingUnitIndex];
+                        if (codigo) {
+                            codigos.push(String(codigo).trim());
+                        }
+                    }
+
+                    datosA = {
+                        codigos: codigos,
+                        nombre: nombreArchivoA
+                    };
+
+                    const codigosUnicos = [...new Set(codigos)];
+                    const duplicados = encontrarDuplicados(codigos);
+
+                    let mensaje = `✅ Archivo cargado exitosamente: ${nombreArchivoA}<br>`;
+                    mensaje += `📊 Total de códigos: ${codigos.length}<br>`;
+                    mensaje += `🔢 Códigos únicos: ${codigosUnicos.length}`;
+
+                    if (duplicados.length > 0) {
+                        mensaje += `<br>⚠️ Se detectaron ${duplicados.length} códigos duplicados`;
+                    }
+
+                    mostrarEstado('statusA', mensaje, 'success');
+                    verificarBotonComparar();
+                } catch (error) {
+                    mostrarEstado('statusA', `Error al procesar el archivo: ${error.message}`, 'error');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function procesarArchivoB(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            nombreArchivoB = file.name;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {
+                        type: 'array'
+                    });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+                        header: 1
+                    });
+
+                    const headers = jsonData[0];
+                    const huIndex = headers.indexOf('Handling Unit');
+                    const remitoIndex = headers.indexOf('Remito');
+
+                    if (huIndex === -1 || remitoIndex === -1) {
+                        mostrarEstado('statusB', 'Error: No se encontraron las columnas "Handling Unit" y/o "Remito"', 'error');
+                        return;
+                    }
+
+                    const registros = [];
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const hu = jsonData[i][huIndex];
+                        const remito = jsonData[i][remitoIndex];
+                        if (hu && remito) {
+                            registros.push({
+                                handlingUnit: String(hu).trim(),
+                                remito: String(remito).trim()
+                            });
+                        }
+                    }
+
+                    datosB = {
+                        registros: registros,
+                        nombre: nombreArchivoB
+                    };
+
+                    const remitosUnicos = new Set(registros.map(r => r.remito)).size;
+                    const huUnicos = new Set(registros.map(r => r.handlingUnit)).size;
+
+                    let mensaje = `✅ Archivo cargado exitosamente: ${nombreArchivoB}<br>`;
+                    mensaje += `📊 Total de registros: ${registros.length}<br>`;
+                    mensaje += `📋 Remitos únicos: ${remitosUnicos}<br>`;
+                    mensaje += `🏷️ Handling Units únicos: ${huUnicos}`;
+
+                    mostrarEstado('statusB', mensaje, 'success');
+                    verificarBotonComparar();
+                } catch (error) {
+                    mostrarEstado('statusB', `Error al procesar el archivo: ${error.message}`, 'error');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function encontrarDuplicados(array) {
+            const conteo = {};
+            const duplicados = [];
+
+            array.forEach(item => {
+                conteo[item] = (conteo[item] || 0) + 1;
+            });
+
+            Object.keys(conteo).forEach(key => {
+                if (conteo[key] > 1) {
+                    duplicados.push({
+                        codigo: key,
+                        veces: conteo[key]
+                    });
+                }
+            });
+
+            return duplicados;
+        }
+
+        function verificarBotonComparar() {
+            const btnComparar = document.getElementById('btnComparar');
+            if (datosA && datosB) {
+                btnComparar.disabled = false;
+            }
+        }
+
+        function compararArchivos() {
+            if (!datosA || !datosB) {
+                alert('Debe cargar ambos archivos antes de comparar');
+                return;
+            }
+
+            ocultarTodo();
+            document.getElementById('loading').classList.remove('hidden');
+
+            setTimeout(() => {
+                try {
+                    const reporte = generarReporte();
+                    reporteGenerado = reporte;
+                    mostrarReporte(reporte);
+                    document.getElementById('btnExportar').disabled = false;
+                } catch (error) {
+                    alert(`Error al comparar archivos: ${error.message}`);
+                }
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        }
+
+        function generarReporte() {
+            const codigosA = new Set(datosA.codigos);
+            const codigosB = new Set(datosB.registros.map(r => r.handlingUnit));
+
+            const soloEnA = [...codigosA].filter(c => !codigosB.has(c));
+            const soloEnB = [...codigosB].filter(c => !codigosA.has(c));
+
+            const huConMultiplesRemitos = new Map();
+            datosB.registros.forEach(reg => {
+                if (!huConMultiplesRemitos.has(reg.handlingUnit)) {
+                    huConMultiplesRemitos.set(reg.handlingUnit, new Set());
+                }
+                huConMultiplesRemitos.get(reg.handlingUnit).add(reg.remito);
+            });
+
+            const duplicadosEnRemitos = [];
+            huConMultiplesRemitos.forEach((remitos, hu) => {
+                if (remitos.size > 1) {
+                    duplicadosEnRemitos.push({
+                        handlingUnit: hu,
+                        remitos: [...remitos]
+                    });
+                }
+            });
+
+            const duplicadosA = encontrarDuplicados(datosA.codigos);
+            const remitosUnicos = new Set(datosB.registros.map(r => r.remito));
+
+            const huBSinDuplicadosEnRemitos = new Set();
+            datosB.registros.forEach(reg => {
+                if (huConMultiplesRemitos.get(reg.handlingUnit).size === 1) {
+                    huBSinDuplicadosEnRemitos.add(reg.handlingUnit);
+                }
+            });
+
+            const hayAnomalias = soloEnA.length > 0 || soloEnB.length > 0 || duplicadosEnRemitos.length > 0;
+
+            return {
+                nombreA: datosA.nombre,
+                nombreB: datosB.nombre,
+                duplicadosA: duplicadosA,
+                totalCodigosA: datosA.codigos.length,
+                soloEnA: soloEnA,
+                soloEnB: soloEnB,
+                duplicadosEnRemitos: duplicadosEnRemitos,
+                hayAnomalias: hayAnomalias,
+                totalRemitos: remitosUnicos.size,
+                totalHUCoincidentes: [...codigosA].filter(c => codigosB.has(c)).length,
+                totalHUB: huBSinDuplicadosEnRemitos.size
+            };
+        }
+
+        function mostrarReporte(reporte) {
+            ocultarTodo();
+            const reporteArea = document.getElementById('reporteArea');
+            reporteArea.classList.remove('hidden');
+
+            let html = '<div class="report-section">';
+            html += '<h2>📋 Reporte de Comparación</h2>';
+
+            html += `<div class="status-info status-message">`;
+            html += `<strong>Archivo A:</strong> ${reporte.nombreA}<br>`;
+            html += `<strong>Archivo B:</strong> ${reporte.nombreB}`;
+            html += `</div>`;
+
+            html += '<h3 style="color: #0055B8; margin-top: 20px;">Análisis Archivo A (Etiquetas a Controlar)</h3>';
+            html += `<p>En el archivo de Etiquetas a controlar "${reporte.nombreA}" hay ${reporte.totalCodigosA} código(s)`;
+
+            if (reporte.duplicadosA.length > 0) {
+                html += ` y se repiten los siguientes códigos:</p>`;
+                html += '<div class="code-list"><ul>';
+                reporte.duplicadosA.forEach(dup => {
+                    html += `<li><strong>${dup.codigo}</strong> - se repite ${dup.veces} veces</li>`;
+                });
+                html += '</ul></div>';
+            } else {
+                html += '.</p>';
+            }
+
+            html += '<h3 style="color: #0055B8; margin-top: 20px;">Resultado de la Comparación</h3>';
+
+            if (!reporte.hayAnomalias) {
+                html += `<div class="status-success status-message">`;
+                html += `<p><strong>✅ Buenos días, se compararon los archivos "${reporte.nombreA}" y "${reporte.nombreB}"</strong></p>`;
+                html += `<p>No se detectan anomalías, coinciden los códigos de Etiquetas a controlar con los códigos del Archivo de Remitos a Imprimir con un total de <strong>${reporte.totalRemitos} Remitos</strong> y <strong>${reporte.totalHUCoincidentes} Handling Units</strong>.</p>`;
+                html += `</div>`;
+            } else {
+                html += `<div class="status-warning status-message">`;
+                html += `<p><strong>⚠️ Buenos días, se compararon los archivos "${reporte.nombreA}" y "${reporte.nombreB}"</strong></p>`;
+                html += `<p><strong>Se detectan anomalías:</strong></p>`;
+                html += `</div>`;
+
+                if (reporte.soloEnA.length > 0) {
+                    html += `<h4 style="color: #C41E3A; margin-top: 15px;">Opción 1) Códigos en "${reporte.nombreA}" pero NO en "${reporte.nombreB}":</h4>`;
+                    html += '<div class="code-list"><ul>';
+                    reporte.soloEnA.forEach(codigo => {
+                        html += `<li>${codigo}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+
+                if (reporte.soloEnB.length > 0) {
+                    html += `<h4 style="color: #C41E3A; margin-top: 15px;">Opción 2) Códigos en "${reporte.nombreB}" pero NO en "${reporte.nombreA}":</h4>`;
+                    html += '<div class="code-list"><ul>';
+                    reporte.soloEnB.forEach(codigo => {
+                        html += `<li>${codigo}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+
+                if (reporte.duplicadosEnRemitos.length > 0) {
+                    html += `<h4 style="color: #C41E3A; margin-top: 15px;">Opción 3) Etiquetas que se repiten en más de un Remito:</h4>`;
+                    html += '<div class="code-list"><ul>';
+                    reporte.duplicadosEnRemitos.forEach(item => {
+                        html += `<li><strong>${item.handlingUnit}</strong> → Remitos: ${item.remitos.join(', ')}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+            }
+
+            html += '</div>';
+            reporteArea.innerHTML = html;
+        }
+
+        function exportarPDF() {
+            if (!reporteGenerado) {
+                alert('Primero debe realizar la comparación');
+                return;
+            }
+
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            let y = 20;
+
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Control Etiquetas/Remitos Despacho', pageWidth / 2, y, {
+                align: 'center'
+            });
+            doc.text('RDC Troncal Rosario', pageWidth / 2, y + 8, {
+                align: 'center'
+            });
+
+            y += 25;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Archivo A: ${reporteGenerado.nombreA}`, 15, y);
+            y += 6;
+            doc.text(`Archivo B: ${reporteGenerado.nombreB}`, 15, y);
+            y += 6;
+            doc.text(`Fecha: ${new Date().toLocaleString('es-AR')}`, 15, y);
+
+            y += 15;
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Análisis Archivo A (Etiquetas a Controlar)`, 15, y);
+
+            y += 8;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            let textoA = `En el archivo de Etiquetas a controlar "${reporteGenerado.nombreA}" hay ${reporteGenerado.totalCodigosA} código(s)`;
+
+            if (reporteGenerado.duplicadosA.length > 0) {
+                doc.text(textoA + ' y se repiten los siguientes códigos:', 15, y, {
+                    maxWidth: 180
+                });
+                y += 12;
+                reporteGenerado.duplicadosA.forEach(dup => {
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(`  - ${dup.codigo}: se repite ${dup.veces} veces`, 20, y);
+                    y += 6;
+                });
+            } else {
+                doc.text(textoA + '.', 15, y, {
+                    maxWidth: 180
+                });
+                y += 8;
+            }
+
+            y += 10;
+            if (y > 250) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Resultado de la Comparación', 15, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+
+            if (!reporteGenerado.hayAnomalias) {
+                const textoExito = `Buenos días, se compararon los archivos "${reporteGenerado.nombreA}" y "${reporteGenerado.nombreB}". No se detectan anomalías, coinciden los códigos de Etiquetas a controlar con los códigos del Archivo de Remitos a Imprimir con un total de ${reporteGenerado.totalRemitos} Remitos y ${reporteGenerado.totalHUCoincidentes} Handling Units.`;
+                doc.text(textoExito, 15, y, {
+                    maxWidth: 180
+                });
+            } else {
+                doc.text(`Buenos días, se compararon los archivos "${reporteGenerado.nombreA}" y "${reporteGenerado.nombreB}".`, 15, y, {
+                    maxWidth: 180
+                });
+                y += 12;
+                doc.setFont(undefined, 'bold');
+                doc.text('Se detectan anomalías:', 15, y);
+                y += 10;
+                doc.setFont(undefined, 'normal');
+
+                if (reporteGenerado.soloEnA.length > 0) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Opción 1) Códigos en "${reporteGenerado.nombreA}" pero NO en "${reporteGenerado.nombreB}":`, 15, y, {
+                        maxWidth: 180
+                    });
+                    y += 8;
+                    doc.setFont(undefined, 'normal');
+                    reporteGenerado.soloEnA.forEach(codigo => {
+                        if (y > 280) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(`  - ${codigo}`, 20, y);
+                        y += 6;
+                    });
+                    y += 5;
+                }
+
+                if (reporteGenerado.soloEnB.length > 0) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Opción 2) Códigos en "${reporteGenerado.nombreB}" pero NO en "${reporteGenerado.nombreA}":`, 15, y, {
+                        maxWidth: 180
+                    });
+                    y += 8;
+                    doc.setFont(undefined, 'normal');
+                    reporteGenerado.soloEnB.forEach(codigo => {
+                        if (y > 280) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(`  - ${codigo}`, 20, y);
+                        y += 6;
+                    });
+                    y += 5;
+                }
+
+                if (reporteGenerado.duplicadosEnRemitos.length > 0) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Opción 3) Etiquetas que se repiten en más de un Remito:', 15, y, {
+                        maxWidth: 180
+                    });
+                    y += 8;
+                    doc.setFont(undefined, 'normal');
+                    reporteGenerado.duplicadosEnRemitos.forEach(item => {
+                        if (y > 275) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(`  - ${item.handlingUnit} → Remitos: ${item.remitos.join(', ')}`, 20, y, {
+                            maxWidth: 170
+                        });
+                        y += 6;
+                    });
+                }
+            }
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            doc.save(`Reporte_Control_Etiquetas_${timestamp}.pdf`);
+        }
+
+        function limpiarDatos() {
+            if (confirm('¿Está seguro de que desea limpiar todos los datos?')) {
+                datosA = null;
+                datosB = null;
+                nombreArchivoA = '';
+                nombreArchivoB = '';
+                reporteGenerado = null;
+
+                document.getElementById('fileA').value = '';
+                document.getElementById('fileB').value = '';
+                document.getElementById('statusA').innerHTML = '';
+                document.getElementById('statusB').innerHTML = '';
+                document.getElementById('btnComparar').disabled = true;
+                document.getElementById('btnExportar').disabled = true;
+
+                ocultarTodo();
+                document.getElementById('welcomeMessage').classList.remove('hidden');
+            }
+        }
+
+        function mostrarEstado(id, mensaje, tipo) {
+            const elemento = document.getElementById(id);
+            elemento.innerHTML = '';
+
+            if (mensaje) {
+                const div = document.createElement('div');
+                div.className = `status-message status-${tipo}`;
+                div.innerHTML = mensaje;
+                elemento.appendChild(div);
+            }
+        }
+
+        // Registro de Service Worker estándar para GitHub Pages
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').catch((err) => {
+                    console.error('Error al registrar Service Worker:', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
