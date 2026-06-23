@@ -1,0 +1,26 @@
+# Sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs y temporales
+*.log
+*.tmp
+
+# Dependencias (no se usan, pero por si acaso)
+node_modules/
+
+# Archivos de datos de prueba (no versionar planillas reales)
+*.xlsx
+*.xls
+*.csv
+
+# PDFs generados por la app
+Reporte_Control_Etiquetas_*.pdf

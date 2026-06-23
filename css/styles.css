@@ -1,0 +1,249 @@
+/* ===========================================================================
+   Control Etiquetas/Remitos - Despacho RDC Troncal Rosario
+   Paleta: azul oscuro (base) con detalles en rojo y blanco.
+   =========================================================================== */
+
+:root {
+    --azul-profundo: #001E3C;
+    --azul-oscuro: #002B5C;
+    --azul-medio: #003E7E;
+    --azul-acento: #0055B8;
+    --rojo: #C41E3A;
+    --rojo-claro: #E63946;
+    --rojo-oscuro: #9E1730;
+    --blanco: #FFFFFF;
+    --gris-claro: #F4F6F9;
+    --texto: #1A2330;
+    --sombra: rgba(0, 0, 0, 0.35);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(160deg, var(--azul-profundo), var(--azul-medio));
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--texto);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: var(--blanco);
+    padding: 28px 20px 8px;
+    font-size: 32px;
+    letter-spacing: 0.3px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.app-subtitle {
+    text-align: center;
+    color: var(--blanco);
+    font-size: 20px;
+    font-weight: 500;
+    padding: 0 20px 18px;
+    letter-spacing: 0.3px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    border-bottom: 4px solid var(--rojo);
+    margin-bottom: 30px;
+}
+
+.menu-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background: linear-gradient(to bottom, var(--rojo-claro), var(--rojo));
+    color: var(--blanco);
+    padding: 15px 25px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 4px 10px var(--sombra);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.45);
+    background: linear-gradient(to bottom, var(--rojo), var(--rojo-oscuro));
+}
+
+.btn:focus-visible {
+    outline: 3px solid var(--blanco);
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.content-area {
+    background: var(--blanco);
+    border: 1px solid rgba(0, 30, 60, 0.15);
+    border-top: 5px solid var(--azul-acento);
+    border-radius: 12px;
+    padding: 25px;
+    min-height: 400px;
+    box-shadow: 0 10px 30px var(--sombra);
+}
+
+.file-input-group {
+    margin-bottom: 20px;
+    padding: 18px;
+    background: var(--gris-claro);
+    border: 1px solid rgba(0, 30, 60, 0.12);
+    border-left: 4px solid var(--azul-acento);
+    border-radius: 8px;
+}
+
+.file-input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: var(--azul-oscuro);
+}
+
+.file-input-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(0, 30, 60, 0.2);
+    border-radius: 6px;
+    background: var(--blanco);
+    cursor: pointer;
+}
+
+.status-message {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border-left: 5px solid transparent;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #E6F4EA;
+    border-left-color: #1E7E34;
+    color: #155724;
+}
+
+.status-error {
+    background: #FCE8EA;
+    border-left-color: var(--rojo);
+    color: #721C24;
+}
+
+.status-warning {
+    background: #FFF6DC;
+    border-left-color: #E0A800;
+    color: #856404;
+}
+
+.status-info {
+    background: #E3F0FB;
+    border-left-color: var(--azul-acento);
+    color: #0C3D66;
+}
+
+.report-section {
+    margin-top: 20px;
+    padding: 22px;
+    background: var(--blanco);
+    border: 1px solid rgba(0, 30, 60, 0.12);
+    border-radius: 10px;
+}
+
+.report-section h2 {
+    color: var(--azul-oscuro);
+    border-bottom: 3px solid var(--rojo);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.report-section h3 {
+    color: var(--azul-acento);
+    margin-top: 20px;
+}
+
+.report-section h4 {
+    color: var(--rojo);
+    margin-top: 15px;
+}
+
+.report-section p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.code-list {
+    background: var(--gris-claro);
+    border: 1px solid rgba(0, 30, 60, 0.15);
+    border-radius: 6px;
+    padding: 15px;
+    margin: 10px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.code-list ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.code-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0, 30, 60, 0.1);
+}
+
+.code-list li:last-child {
+    border-bottom: none;
+}
+
+.hidden {
+    display: none;
+}
+
+#loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: var(--azul-acento);
+    font-weight: bold;
+}
+
+.spinner {
+    border: 4px solid var(--gris-claro);
+    border-top: 4px solid var(--rojo);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
